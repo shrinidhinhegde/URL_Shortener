@@ -8,8 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -24,10 +27,14 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int PERMISSION_REQUEST_CODE = 1000;
     private Button submit,copy;
     private TextView resultText;
     private EditText submitText;
+    private Button download;
     private String data;
+    private String url;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,26 +46,31 @@ public class MainActivity extends AppCompatActivity {
         copy = findViewById(R.id.copy_button);
         submitText = findViewById(R.id.submit_text);
         resultText = findViewById(R.id.result);
+        download = findViewById(R.id.download);
+        imageView = findViewById(R.id.qr_code);
+
 
         //get data from user
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 data = submitText.getText().toString();
+                url = data;
                 data = "url="+data;
                 System.out.println(data);
                 submit.setVisibility(View.GONE);
                 submitText.setVisibility(View.GONE);
                 try {
-                    task(data);
+                    task(data, url);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
     }
-    public void task(String d) throws IOException {
+    public void task(String d, String u) throws IOException {
         OkHttpClient client = new OkHttpClient();
+        OkHttpClient client1 = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
         RequestBody body = RequestBody.create(mediaType, d);
@@ -68,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("x-rapidapi-host", "url-shortener-service.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "21e213400cmsh5e9e175e32cec4bp13ad1bjsne84f91c9ccf2")
                 .addHeader("content-type", "application/x-www-form-urlencoded")
+                .build();
+
+        Request request1 = new Request.Builder()
+                .url("https://pierre2106j-qrcode.p.rapidapi.com/api?backcolor=ffffff&pixel=1%20to%2010&ecl=L%20%257C%20M%257C%20Q%20%257C%20H&forecolor=000000&type=text%20%257C%20url%20%257C%20tel%20%257C%20sms%20%257C%20email&text="+u)
+                .get()
+                .addHeader("x-rapidapi-host", "pierre2106j-qrcode.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "21e213400cmsh5e9e175e32cec4bp13ad1bjsne84f91c9ccf2")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -94,6 +113,27 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this, "Copied to Clipboard", Toast.LENGTH_SHORT).show();
                             }
                         });
+                    }
+                });
+            }
+        });
+
+        client1.newCall(request1).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String n = response.body().string();
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(n);
+                        download.setVisibility(View.VISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
+                        Picasso.with(getBaseContext()).load(n).into(imageView);
                     }
                 });
             }
