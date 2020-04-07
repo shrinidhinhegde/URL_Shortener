@@ -131,8 +131,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         System.out.println(n);
-                        imageView.setVisibility(View.VISIBLE);
-                        Picasso.with(getBaseContext()).load(n).into(imageView);
                     }
                 });
             }
