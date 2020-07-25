@@ -10,8 +10,8 @@
         android:id="@+id/submit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter your URL here!"
         android:textSize="30dp"
+        android:inputType="textWebEditText"
         android:layout_centerInParent="true"
         android:layout_above="@+id/submit_button"/>
 
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/download"
         android:visibility="gone"
-        android:text="Download QR Code"
+        android:text="Copy QR Code Link"
         android:layout_centerInParent="true"
         android:layout_below="@+id/copy_button"/>
 

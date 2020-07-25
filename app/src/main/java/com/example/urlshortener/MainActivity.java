@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -48,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         resultText = findViewById(R.id.result);
         download = findViewById(R.id.download);
         imageView = findViewById(R.id.qr_code);
+        submitText.setHint("Enter URL Here");
 
 
         //get data from user
@@ -131,6 +130,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         System.out.println(n);
+                        download.setVisibility(View.VISIBLE);
+                        download.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("label",n);
+                                clipboard.setPrimaryClip(clip);
+                                Toast.makeText(MainActivity.this, "QR Code link is Copied to Clipboard", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     }
                 });
             }
